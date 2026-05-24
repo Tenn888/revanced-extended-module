@@ -8,6 +8,17 @@ cli-version = "dev"
 # see https://github.com/j-hc/revanced-magisk-module/blob/main/CONFIG.md for more detailed explanations
 
 # you can use rvmm-config-gen to generate a config
+[YouTube-Extended]
+app-name = "YouTube"
+rv-brand = "ReVanced Extended"
+module-prop-name = "youtube-extended-amoled"
+build-mode = "module"
+version = "20.21.37"
+patches-source = "anddea/revanced-patches"
+patches-version = "dev"
+apkmirror-dlurl = "https://www.apkmirror.com/apk/google-inc/youtube"
+uptodown-dlurl = "https://youtube.en.uptodown.com/android"
+excluded-patches = "'Custom branding icon for YouTube' 'Custom branding name for YouTube' 'Custom header for YouTube'"
 
 [YouTube-Extended-Amoled]
 app-name = "YouTube AMOLED"
