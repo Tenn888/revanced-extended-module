@@ -516,7 +516,7 @@ dl_archive() {
 		output_m="${output}.apkm"
 	else
 		output_m=$output
-	fi
+	fiarchive-dlurl = "https://archive.org/download/jhc-apks/apks/com.google.android.apps.youtube.music"
 	req "${url}/${path}" "$output_m" || return 1
 	if [ "${path##*.}" = "apkm" ]; then
 		merge_splits "$output_m" "$output"
