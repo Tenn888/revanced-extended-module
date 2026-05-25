@@ -119,7 +119,7 @@ get_prebuilts() {
 			name=$(jq -r .name <<<"$asset")
 			file="${dir}/${name}"
 			gh_dl "$file" "$url" >&2 || return 1
-			echo "$tag: $(cut -d/ -f1 <<<"$src")/${name}  " >>"${cl_dir}/changelog.md"
+			changelog_log_once "${cl_dir}/changelog.md" "$tag: $(cut -d/ -f1 <<<"$src")/${name}  "
 		else
 			grab_cl=false
 			name=$(basename "$file")
@@ -128,7 +128,10 @@ get_prebuilts() {
 		fi
 
 		if [ "$tag" = "Patches" ]; then
-			if [ "$grab_cl" = true ]; then echo -e "[Changelog](https://github.com/${src}/releases/tag/${tag_name})\n" >>"${cl_dir}/changelog.md"; fi
+			if [ "$grab_cl" = true ]; then
+				changelog_log_once "${cl_dir}/changelog.md" "[Changelog](https://github.com/${src}/releases/tag/${tag_name})"
+				echo >>"${cl_dir}/changelog.md"
+			fi
 			if [ "$REMOVE_RV_INTEGRATIONS_CHECKS" = true ]; then
 				local extensions_ext
 				extensions_ext=$(unzip -l "${file}" "extensions/shared.*" | grep -o "shared\..*") extensions_ext="${extensions_ext#*.}"
@@ -240,6 +243,11 @@ gh_dl() {
 }
 
 log() { echo -e "$1  " >>"build.md"; }
+changelog_log_once() {
+	local file=$1 entry=$2
+	touch "$file"
+	grep -Fxq "$entry" "$file" || echo "$entry" >>"$file"
+}
 get_highest_ver() {
 	local vers m
 	vers=$(tee)
