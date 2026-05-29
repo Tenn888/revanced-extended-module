@@ -1,6 +1,6 @@
-YouTube-Extended-Amoled: 20.21.37  
-YouTube-Extended-Material: 20.21.37  
-YouTube-Extended-Standard: 20.21.37  
+YouTube-Extended-Amoled: 20.51.39  
+YouTube-Extended-Material: 20.51.39  
+YouTube-Extended-Standard: 20.51.39  
 YouTube-Music-Extended (arm64-v8a): 8.30.54  
 YouTube-Music-Extended (arm-v7a): 8.30.54  
 
