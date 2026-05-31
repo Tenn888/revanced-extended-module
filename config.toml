@@ -8,7 +8,7 @@ cli-version = "dev"
 # see https://github.com/j-hc/revanced-magisk-module/blob/main/CONFIG.md for more detailed explanations
 
 # you can use rvmm-config-gen to generate a config
-[YouTube-Extended-Amoled-20.51.39]
+["YouTube-Extended-Amoled-20.51.39"]
 app-name = "YouTube AMOLED"
 rv-brand = "ReVanced Extended"
 module-prop-name = "youtube-extended-amoled"
@@ -22,7 +22,7 @@ patcher-args = "-OTheme=amoled"
 included-patches = "'Theme'"
 excluded-patches = "'Custom branding icon for YouTube' 'Custom branding name for YouTube' 'Custom header for YouTube'"
 
-[YouTube-Extended-Material-20.51.39]
+["YouTube-Extended-Material-20.51.39"]
 app-name = "YouTube Material"
 rv-brand = "ReVanced Extended"
 module-prop-name = "youtube-extended-material"
@@ -35,7 +35,7 @@ uptodown-dlurl = "https://youtube.en.uptodown.com/android"
 included-patches = "'MaterialYou'"
 excluded-patches = "'Custom branding icon for YouTube' 'Custom branding name for YouTube' 'Custom header for YouTube'"
 
-[YouTube-Extended-Standard-20.51.39]
+["YouTube-Extended-Standard-20.51.39"]
 app-name = "YouTube Standard"
 rv-brand = "ReVanced Extended"
 module-prop-name = "youtube-extended-standard"
@@ -47,7 +47,7 @@ apkmirror-dlurl = "https://www.apkmirror.com/apk/google-inc/youtube"
 uptodown-dlurl = "https://youtube.en.uptodown.com/android"
 excluded-patches = "'Custom branding icon for YouTube' 'Custom branding name for YouTube' 'Custom header for YouTube'"
 
-[YouTube-Extended-Amoled-20.21.37]
+["YouTube-Extended-Amoled-20.21.37"]
 app-name = "YouTube AMOLED"
 rv-brand = "ReVanced Extended"
 module-prop-name = "youtube-extended-amoled"
@@ -61,7 +61,7 @@ patcher-args = "-OTheme=amoled"
 included-patches = "'Theme'"
 excluded-patches = "'Custom branding icon for YouTube' 'Custom branding name for YouTube' 'Custom header for YouTube'"
 
-[YouTube-Extended-Material-20.21.37]
+["YouTube-Extended-Material-20.21.37"]
 app-name = "YouTube Material"
 rv-brand = "ReVanced Extended"
 module-prop-name = "youtube-extended-material"
@@ -74,7 +74,7 @@ uptodown-dlurl = "https://youtube.en.uptodown.com/android"
 included-patches = "'MaterialYou'"
 excluded-patches = "'Custom branding icon for YouTube' 'Custom branding name for YouTube' 'Custom header for YouTube'"
 
-[YouTube-Extended-Standard-20.21.37]
+["YouTube-Extended-Standard-20.21.37"]
 app-name = "YouTube Standard"
 rv-brand = "ReVanced Extended"
 module-prop-name = "youtube-extended-standard"
@@ -86,7 +86,7 @@ apkmirror-dlurl = "https://www.apkmirror.com/apk/google-inc/youtube"
 uptodown-dlurl = "https://youtube.en.uptodown.com/android"
 excluded-patches = "'Custom branding icon for YouTube' 'Custom branding name for YouTube' 'Custom header for YouTube'"
 
-[YouTube-Music-Extended]
+["YouTube-Music-Extended-8.30.54"]
 app-name = "YouTube Music"
 rv-brand = "ReVanced Extended"
 module-prop-name = "youtube-music-extended"

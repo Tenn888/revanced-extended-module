@@ -13,13 +13,20 @@ OS=$(uname -o)
 
 toml_prep() {
 	if [ ! -f "$1" ]; then return 1; fi
+	__TOML_FILE__=$1
 	if [ "${1##*.}" == toml ]; then
 		__TOML__=$($TOML --output json --file "$1" .)
 	elif [ "${1##*.}" == json ]; then
 		__TOML__=$(cat "$1")
 	else abort "config extension not supported"; fi
 }
-toml_get_table_names() { jq -r -e 'to_entries[] | select(.value | type == "object") | .key' <<<"$__TOML__"; }
+toml_get_table_names() {
+	if [ "${__TOML_FILE__##*.}" == toml ]; then
+		sed -n 's/^\[\"\(.*\)\"\][[:space:]]*$/\1/p; s/^\[\([^].]*\)\][[:space:]]*$/\1/p' "$__TOML_FILE__"
+	else
+		jq -r -e 'to_entries[] | select(.value | type == "object") | .key' <<<"$__TOML__"
+	fi
+}
 toml_get_table_main() { jq -r -e 'to_entries | map(select(.value | type != "object")) | from_entries' <<<"$__TOML__"; }
 toml_get_table() { jq -r -e ".\"${1}\"" <<<"$__TOML__"; }
 toml_get() {
@@ -718,8 +725,8 @@ build_rv() {
 		fi
 	fi
 	local release_table=$table
-	if [[ $release_table == *-"$version" ]]; then
-		release_table=${release_table%-"$version"}
+	if [[ $release_table == *-"$version"* ]]; then
+		release_table=${release_table/-"$version"/}
 	fi
 	log "${release_table}: ${version}"
 
