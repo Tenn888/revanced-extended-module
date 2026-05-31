@@ -243,6 +243,27 @@ gh_dl() {
 }
 
 log() { echo -e "$1  " >>"build.md"; }
+format_build_log() {
+	local tmp
+	tmp=$(mktemp -p "$TEMP_DIR")
+	awk '
+		/^[^[:space:]].*: [^[:space:]]+[[:space:]]*$/ && $0 !~ /^(CLI|Patches):/ {
+			line = $0
+			sub(/[[:space:]]+$/, "", line)
+			version = line
+			sub(/^.*: /, "", version)
+			if (seen && version != last_version) {
+				print ""
+			}
+			print line "  "
+			last_version = version
+			seen = 1
+			next
+		}
+		{ print }
+	' build.md >"$tmp"
+	mv -f "$tmp" build.md
+}
 changelog_log_once() {
 	local file=$1 entry=$2
 	touch "$file"
@@ -696,7 +717,11 @@ build_rv() {
 			return 0
 		fi
 	fi
-	log "${table}: ${version}"
+	local release_table=$table
+	if [[ $release_table == *-"$version" ]]; then
+		release_table=${release_table%-"$version"}
+	fi
+	log "${release_table}: ${version}"
 
 	local microg_patch
 	microg_patch=$(grep "^Name: " <<<"$list_patches" | grep -i "gmscore\|microg" || :) microg_patch=${microg_patch#*: }
