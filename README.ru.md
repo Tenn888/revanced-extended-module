@@ -1,5 +1,5 @@
 <p align="center">
-    <a href="README.ru.md">🇺🇸 English</a>
+    <a href="README.md">🇺🇸 English</a>
 </p>
 
 # Модуль ReVanced для Magisk
