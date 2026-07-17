@@ -1,6 +1,6 @@
 {
-  "version": "v8.30.54 (patches dev.6.mpp)",
-  "versionCode": 22,
-  "zipUrl": "https://github.com/Tenn888/revanced-extended-module/releases/download/22/youtube-music-revanced-extended-module-v8.30.54-arm-v7a.zip",
+  "version": "v8.30.54 (patches dev.7.mpp)",
+  "versionCode": 23,
+  "zipUrl": "https://github.com/Tenn888/revanced-extended-module/releases/download/23/youtube-music-revanced-extended-module-v8.30.54-arm-v7a.zip",
   "changelog": "https://raw.githubusercontent.com/Tenn888/revanced-extended-module/update/build.md"
 }
