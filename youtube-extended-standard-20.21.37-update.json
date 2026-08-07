@@ -1,6 +1,6 @@
 {
-  "version": "v20.21.37 (patches dev.14.mpp)",
-  "versionCode": 27,
-  "zipUrl": "https://github.com/Tenn888/revanced-extended-module/releases/download/27/youtube-standard-revanced-extended-module-v20.21.37-all.zip",
+  "version": "v20.21.37 (patches 4.2.0.mpp)",
+  "versionCode": 28,
+  "zipUrl": "https://github.com/Tenn888/revanced-extended-module/releases/download/28/youtube-standard-revanced-extended-module-v20.21.37-all.zip",
   "changelog": "https://raw.githubusercontent.com/Tenn888/revanced-extended-module/update/build.md"
 }
