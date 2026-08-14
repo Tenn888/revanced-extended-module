@@ -587,7 +587,22 @@ get_archive_resp() {
 
         __ARCHIVE_RESP__=$(sed -n 's/.*href="\([^"]*\.apk\)".*/\1/p' <<<"$r")
 
-        __ARCHIVE_PKG_NAME__=$(awk -F/ '{print $NF}' <<<"$1")
+        local first_apk
+        first_apk=$(printf '%s\n' "$__ARCHIVE_RESP__" | grep -m1 '\.apk$' | awk -F/ '{print $NF}' || true)
+        if [ -n "$first_apk" ]; then
+                first_apk=${first_apk%.apk}
+                first_apk=${first_apk%-all}
+                first_apk=${first_apk%-arm64-v8a}
+                first_apk=${first_apk%-arm-v7a}
+                first_apk=${first_apk%-x86_64}
+                first_apk=${first_apk%-x86}
+                if [[ "$first_apk" =~ -v?[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+                        first_apk=${first_apk%-*}
+                fi
+                __ARCHIVE_PKG_NAME__="$first_apk"
+        else
+                __ARCHIVE_PKG_NAME__=$(awk -F/ '{print $NF}' <<<"$1")
+        fi
 }
 get_archive_vers() { sed 's/^[^-]*-//;s/-\(all\|arm64-v8a\|arm-v7a\)\.apk//g' <<<"$__ARCHIVE_RESP__"; }
 get_archive_pkg_name() { echo "$__ARCHIVE_PKG_NAME__"; }

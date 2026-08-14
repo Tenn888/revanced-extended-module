@@ -8,6 +8,7 @@ cli-version = "dev"
 
 ["YouTube-Extended-Amoled-20.51.39"]
 app-name = "YouTube AMOLED"
+pkg-name = "com.google.android.youtube"
 rv-brand = "ReVanced Extended"
 module-prop-name = "youtube-extended-amoled"
 build-mode = "both"
@@ -23,6 +24,7 @@ excluded-patches = "'Custom branding icon for YouTube' 'Custom branding name for
 
 ["YouTube-Extended-Material-20.51.39"]
 app-name = "YouTube Material"
+pkg-name = "com.google.android.youtube"
 rv-brand = "ReVanced Extended"
 module-prop-name = "youtube-extended-material"
 build-mode = "both"
@@ -37,6 +39,7 @@ excluded-patches = "'Custom branding icon for YouTube' 'Custom branding name for
 
 ["YouTube-Extended-Standard-20.51.39"]
 app-name = "YouTube Standard"
+pkg-name = "com.google.android.youtube"
 rv-brand = "ReVanced Extended"
 module-prop-name = "youtube-extended-standard"
 build-mode = "both"
@@ -50,6 +53,7 @@ excluded-patches = "'Custom branding icon for YouTube' 'Custom branding name for
 
 ["YouTube-Extended-Amoled-20.21.37"]
 app-name = "YouTube AMOLED"
+pkg-name = "com.google.android.youtube"
 rv-brand = "ReVanced Extended"
 module-prop-name = "youtube-extended-amoled"
 build-mode = "both"
@@ -65,6 +69,7 @@ excluded-patches = "'Custom branding icon for YouTube' 'Custom branding name for
 
 ["YouTube-Extended-Material-20.21.37"]
 app-name = "YouTube Material"
+pkg-name = "com.google.android.youtube"
 rv-brand = "ReVanced Extended"
 module-prop-name = "youtube-extended-material"
 build-mode = "both"
@@ -79,6 +84,7 @@ excluded-patches = "'Custom branding icon for YouTube' 'Custom branding name for
 
 ["YouTube-Extended-Standard-20.21.37"]
 app-name = "YouTube Standard"
+pkg-name = "com.google.android.youtube"
 rv-brand = "ReVanced Extended"
 module-prop-name = "youtube-extended-standard"
 build-mode = "both"
@@ -92,6 +98,7 @@ excluded-patches = "'Custom branding icon for YouTube' 'Custom branding name for
 
 ["YouTube-Music-Extended-9.15.51"]
 app-name = "YouTube Music"
+pkg-name = "com.google.android.apps.youtube.music"
 rv-brand = "ReVanced Extended"
 module-prop-name = "youtube-music-extended"
 build-mode = "both"
@@ -106,6 +113,7 @@ excluded-patches = "'Custom branding icon for YouTube Music' 'Custom branding na
 
 ["YouTube-Music-Extended-8.30.54"]
 app-name = "YouTube Music"
+pkg-name = "com.google.android.apps.youtube.music"
 rv-brand = "ReVanced Extended"
 module-prop-name = "youtube-music-extended"
 build-mode = "both"
