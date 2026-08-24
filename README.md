@@ -2,6 +2,10 @@
     <a href="README.ru.md">🇷🇺 Русский</a>
 </p>
 
+> ## YouTube RVX build has been discontinued
+>
+> Due to the release of patches **RVX 4.3.0-dev2**, the app itself now includes the **customization** feature, so a separate YouTube RVX build within this project is no longer required.
+
 # ReVanced Magisk Module
 
 Extensive ReVanced builder  
