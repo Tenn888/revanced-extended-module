@@ -4,6 +4,12 @@
 
 # ReVanced Magisk Module
 
+> ## Important: the build name has changed
+>
+> **Since the build is now created with a new name, updating over an older version will not work.**
+>
+> **Please remove the old version and install the new one.**
+
 Extensive ReVanced builder  
 
 Get the [latest CI release](https://github.com/Tenn888/revanced-extended-module/releases).
