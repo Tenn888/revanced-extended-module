@@ -135,20 +135,19 @@ jobs:
               MODULES+="${NL}📦[${OUTPUT}](${DL_URL})"
             fi
           done
-          MODULES=${MODULES#"$NL"}
-          APKS=${APKS#"$NL"}
+          if [ -n "$MODULES" ]; then
+            MODULES="Modules:${NL}${MODULES#"$NL"}"
+            if [ -n "$APKS" ]; then MODULES+=${NL}${NL}; fi
+          fi
+          if [ -n "$APKS" ]; then APKS="APKs:${NL}${APKS#"$NL"}"; fi
 
-          BODY="$(sed 's/^\* \*\*/↪ \*\*/g; s/^\* `/↪ \*\*/g; s/`/\*/g; s/^\* /\↪/g; s/\*\*/\*/g; s/###//g; s/^- /↪ /g; /^==/d;' ../build.md)"
+          BODY="$(cat ../build.md)"
           MSG="*New build!*
 
           ${BODY}
 
           *▼ Download Links:*
-          Modules:
-          ${MODULES}
-
-          APKs:
-          ${APKS}
+          ${MODULES}${APKS}
           "
           echo "'$MSG'"
           MSG=${MSG:0:9450}
