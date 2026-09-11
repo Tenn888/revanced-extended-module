@@ -58,6 +58,19 @@ apkmirror-dlurl = "https://www.apkmirror.com/apk/google-inc/youtube"
 uptodown-dlurl = "https://youtube.en.uptodown.com/android"
 archive-dlurl = "https://archive.org/download/revanced-extended-stock-apks/"
 
+["YouTube-Extended-19.43.41"]
+app-name = "YouTube"
+pkg-name = "com.google.android.youtube"
+rv-brand = "ReVanced Extended"
+module-prop-name = "youtube-extended-19-43-41"
+build-mode = "both"
+version = "19.43.41"
+patches-source = "anddea/revanced-patches"
+patches-version = "dev"
+apkmirror-dlurl = "https://www.apkmirror.com/apk/google-inc/youtube"
+uptodown-dlurl = "https://youtube.en.uptodown.com/android"
+archive-dlurl = "https://archive.org/download/revanced-extended-stock-apks/"
+
 ["YouTube-Extended-19.28.35"]
 app-name = "YouTube"
 pkg-name = "com.google.android.youtube"

@@ -153,7 +153,9 @@ get_prebuilts() {
 		fi
 
 		if [ "$tag" = "Patches" ]; then
-			if [ "$grab_cl" = "true" ]; then echo -e "[Changelog](https://github.com/${src}/releases/tag/${tag_name})\n" >>"${cl_dir}/changelog.md"; fi
+			if [ "$grab_cl" = "true" ]; then
+				changelog_log_once "${cl_dir}/changelog.md" "[Changelog](https://github.com/${src}/releases/tag/${tag_name})"
+			fi
 			if [ "$REMOVE_RV_INTEGRATIONS_CHECKS" = "true" ]; then
 				local extensions_ext
 				extensions_ext=$(unzip -l "${file}" "extensions/shared.*" | grep -o "shared\..*") extensions_ext="${extensions_ext#*.}"
@@ -274,20 +276,17 @@ format_build_log() {
 	local tmp
 	tmp=$(mktemp -p "$TEMP_DIR")
 	awk '
-		/^[^[:space:]].*: [^[:space:]]+[[:space:]]*$/ && $0 !~ /^(CLI|Patches):/ {
-			line = $0
-			sub(/[[:space:]]+$/, "", line)
-			version = line
-			sub(/^.*: /, "", version)
-			if (seen && version != last_version) {
-				print ""
-			}
-			print line "  "
-			last_version = version
-			seen = 1
-			next
+		function group(line) {
+			if (line ~ /^YouTube-Music-Extended/) return "music"
+			if (line ~ /^YouTube-Extended/) return "youtube"
+			return ""
 		}
-		{ print }
+		{
+			current = group($0)
+			if (current != "" && previous != "" && current != previous) print ""
+			print
+			if (current != "") previous = current
+		}
 	' build.md >"$tmp"
 	mv -f "$tmp" build.md
 }
