@@ -694,7 +694,7 @@ build_rv() {
 	else
 		for dl_p in "${DL_SRCS[@]}"; do
 			if [ -z "${args[${dl_p}_dlurl]}" ]; then continue; fi
-			if ! get_${dl_p}_resp "${args[${dl_p}_dlurl]}" || ! pkg_name=$(get_"${dl_p}"_pkg_name); then
+			if ! get_"${dl_p}"_resp "${args[${dl_p}_dlurl]}" || ! pkg_name=$(get_"${dl_p}"_pkg_name); then
 				args[${dl_p}_dlurl]=""
 				epr "ERROR: Could not find ${table} in ${dl_p}"
 				continue
@@ -729,6 +729,11 @@ build_rv() {
 		p_patcher_args+=("-f")
 	fi
 	if [ $get_latest_ver = "true" ]; then
+		if ! isoneof "$dl_from" "${tried_dl[@]}"; then
+			if ! get_"${dl_from}"_resp "${args[${dl_from}_dlurl]}"; then
+				abort "ERROR: Could not get '${table}' from '${dl_from}'"
+			fi
+		fi
 		pkgvers=$(get_"${dl_from}"_vers)
 		version=$(get_highest_ver <<<"$pkgvers") || version=$(head -1 <<<"$pkgvers")
 	fi
@@ -753,13 +758,13 @@ build_rv() {
 		for dl_p in "${DL_SRCS[@]}"; do
 			if [ -z "${args[${dl_p}_dlurl]}" ]; then continue; fi
 			pr "Downloading '${table}' from '${dl_p}'"
-			if ! isoneof $dl_p "${tried_dl[@]}"; then
-				if ! get_${dl_p}_resp "${args[${dl_p}_dlurl]}"; then
+			if ! isoneof "$dl_p" "${tried_dl[@]}"; then
+				if ! get_"${dl_p}"_resp "${args[${dl_p}_dlurl]}"; then
 					epr "ERROR: Could not get '${table}' from '${dl_p}'"
 					continue
 				fi
 			fi
-			if ! dl_${dl_p} "${args[${dl_p}_dlurl]}" "$version" "$stock_apk" "$arch" "${args[dpi]}" "$get_latest_ver"; then
+			if ! dl_"${dl_p}" "${args[${dl_p}_dlurl]}" "$version" "$stock_apk" "$arch" "${args[dpi]}" "$get_latest_ver"; then
 				epr "ERROR: Could not download '${table}' from '${dl_p}' with version '${version}', arch '${arch}', dpi '${args[dpi]}'"
 				continue
 			fi
