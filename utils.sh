@@ -5,7 +5,7 @@ CWD=$(pwd)
 TEMP_DIR="temp"
 BIN_DIR="bin"
 BUILD_DIR="build"
-DL_SRCS=("direct" "archive" "apkmirror" "uptodown")
+DL_SRCS=("direct" "archive" "apkmirror")
 
 if [ "${GITHUB_TOKEN-}" ]; then GH_HEADER="Authorization: token ${GITHUB_TOKEN}"; else GH_HEADER=; fi
 NEXT_VER_CODE=${NEXT_VER_CODE:-$(date +'%Y%m%d')}
@@ -159,7 +159,7 @@ get_prebuilts() {
 			if [ "$REMOVE_RV_INTEGRATIONS_CHECKS" = "true" ]; then
 				local extensions_ext
 				extensions_ext=$(unzip -l "${file}" "extensions/shared.*" | grep -o "shared\..*") extensions_ext="${extensions_ext#*.}"
-				if ! (
+				(
 					mkdir -p "${file}-zip" || return 1
 					unzip -qo "${file}" -d "${file}-zip" || return 1
 					java -cp "${BIN_DIR}/paccer.jar:${BIN_DIR}/dexlib2.jar" com.jhc.Main "${file}-zip/extensions/shared.${extensions_ext}" "${file}-zip/extensions/shared-patched.${extensions_ext}" || return 1
@@ -167,9 +167,7 @@ get_prebuilts() {
 					rm "${file}" || return 1
 					cd "${file}-zip" || abort
 					zip -0rq "${CWD}/${file}" . || return 1
-				) >&2; then
-					echo >&2 "Patching integrations checks failed"
-				fi
+				) >&2
 				rm -r "${file}-zip" || :
 			fi
 		fi
@@ -651,9 +649,11 @@ patch_apk() {
 	# TODO: remove this later
 	local cli_name
 	cli_name=$(basename "$cli_jar")
-	if [ "${cli_name::8}" = revanced ]; then cmd+=" -t '$patched_apk-tmp' -b"; fi
+	if [ "${cli_name::8}" = "revanced" ]; then
+		cmd+=" -b"
+		if [ "$OS" = "Android" ]; then cmd+=" --custom-aapt2-binary='${AAPT2}'"; fi
+	fi
 
-	# if [ "$OS" = Android ]; then cmd+=" --custom-aapt2-binary='${AAPT2}'"; fi
 	pr "$cmd"
 	if eval "$cmd"; then [ -f "$patched_apk" ]; else
 		rm "$patched_apk" 2>/dev/null || :
@@ -780,12 +780,11 @@ build_rv() {
 	if [ -f "${stock_apk}.apkm" ]; then
 		rm -rf "${stock_apk}-zip" || :
 		unzip -j "${stock_apk}.apkm" -d "${stock_apk}-zip" >/dev/null
-		for a in "${stock_apk}"-zip/*.apk; do
-			if ! sig_op=$(check_sig "$a" "$pkg_name" 2>&1); then
-				epr "Not building $table, apk signature mismatch '$a': $sig_op"
-				return 0
-			fi
-		done
+		local a="${stock_apk}-zip/base.apk"
+		if ! sig_op=$(check_sig "$a" "$pkg_name" 2>&1); then
+			epr "Not building $table, apk signature mismatch '$a': $sig_op"
+			return 0
+		fi
 		rm -rf "${stock_apk}-zip" || :
 	else
 		if ! sig_op=$(check_sig "$stock_apk" "$pkg_name" 2>&1); then
@@ -793,11 +792,8 @@ build_rv() {
 			return 0
 		fi
 	fi
-	local release_table=$table
-	if [[ $release_table == *-"$version"* ]]; then
-		release_table=${release_table/-"$version"/}
-	fi
-	log "${release_table}: ${version}"
+	log "${table}: ${version}"
+	if [ "${args[patcher_args]}" ]; then p_patcher_args+=("${args[patcher_args]}"); fi
 
 	local branding_patch
 	branding_patch=$(grep "^Name: " <<<"$list_patches" | grep -i "custom branding" || :) branding_patch=${branding_patch#*: }
@@ -815,7 +811,6 @@ build_rv() {
 	local patcher_args patched_apk build_mode
 	local rv_brand_f=${args[rv_brand],,}
 	rv_brand_f=${rv_brand_f// /-}
-	if [ "${args[patcher_args]}" ]; then p_patcher_args+=("${args[patcher_args]}"); fi
 	for build_mode in "${build_mode_arr[@]}"; do
 		patcher_args=("${p_patcher_args[@]}")
 		pr "Building '${table}' in '$build_mode' mode"
@@ -850,7 +845,17 @@ build_rv() {
 						dlurl=$(jq -e -r '.assets[0] | .browser_download_url' <<<"$resp") || return 1
 						gh_dl $p "$dlurl" >/dev/null || return 1
 					fi
-					patcher_args+=("-p $p")
+					patcher_args+=("-p '$p'")
+
+					local v
+					v=$(git tag --sort=committerdate | tail -1) || :
+					if [[ $v =~ ^[0-9]+$ ]]; then
+						v=$((v + 1))
+					else
+						epr "'$v' is not a proper version tag"
+						v=""
+					fi
+					if [ -n "$v" ]; then patcher_args+=("-e 'Current Build Tag' -OcurrentTag='\"$v\"'"); fi
 				else
 					wpr "enable-update-checks is only implemented for j-hc/revanced-magisk-module"
 				fi
