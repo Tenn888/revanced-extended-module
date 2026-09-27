@@ -21,8 +21,6 @@ Use [**zygisk-detach**](https://github.com/j-hc/zygisk-detach) to detach YouTube
 
 </details>
 
-<br>
-
 <details>
 <summary><big>Root modules</big></summary>
 

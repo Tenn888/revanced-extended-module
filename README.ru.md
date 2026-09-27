@@ -21,8 +21,6 @@
 
 </details>
 
-<br>
-
 <details>
 <summary><big>Root-модули</big></summary>
 
