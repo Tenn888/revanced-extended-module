@@ -144,18 +144,30 @@ get_prebuilts() {
 
 			file="${dir}/${name}"
 			gh_dl "$file" "$url" >&2 || return 1
-			echo "$tag: ${src}/${name}  " >>"${cl_dir}/changelog.md"
 		else
 			local grab_cl="false"
 			name=$(basename "$file")
-			tag_name=$(cut -d'-' -f2- <<<"$name")
-			tag_name=v${tag_name%.*}
+			if [ "$tag" = "Patches" ]; then
+				tag_name=$(cut -d'-' -f2- <<<"$name")
+				tag_name=v${tag_name%.*}
+			else
+				tag_name=${name#*-desktop-}
+				tag_name=${tag_name#*-cli-}
+				tag_name=${tag_name%-all.jar}
+			fi
+		fi
+		tag_name=${tag_name#v}
+
+		if [ "$tag" = "Patches" ]; then
+			changelog_log_once "${cl_dir}/changelog.md" "Patches: ${src}/${name}"
+			changelog_log_once "${cl_dir}/changelog.md" "[Changelog](https://github.com/${src}/releases/tag/v${tag_name})"
+		else
+			local changelog_src=${src/MorpheApp\/morphe-cli/MorpheApp\/morphe-desktop}
+			changelog_log_once "${cl_dir}/changelog.md" "CLI: ${src}/${name}"
+			changelog_log_once "${cl_dir}/changelog.md" "[Changelog](https://github.com/${changelog_src}/releases/tag/v${tag_name})"
 		fi
 
 		if [ "$tag" = "Patches" ]; then
-			if [ "$grab_cl" = "true" ]; then
-				changelog_log_once "${cl_dir}/changelog.md" "[Changelog](https://github.com/${src}/releases/tag/${tag_name})"
-			fi
 			if [ "$REMOVE_RV_INTEGRATIONS_CHECKS" = "true" ]; then
 				local extensions_ext
 				extensions_ext=$(unzip -l "${file}" "extensions/shared.*" | grep -o "shared\..*") extensions_ext="${extensions_ext#*.}"
@@ -280,9 +292,25 @@ format_build_log() {
 			return ""
 		}
 		{
-			current = group($0)
+			line = $0
+			sub(/[[:space:]]+$/, "", line)
+			if (line ~ /^YouTube-(Music-)?Extended.*: [0-9]/) sub(/: [0-9][0-9.]*$/, "", line)
+			if (line ~ /^YouTube-Music-Extended.* \(arm64-v8a\)$/) {
+				music_line = line
+				next
+			}
+			if (music_line != "" && line ~ /^YouTube-Music-Extended.* \(arm-v7a\)$/) {
+				sub(/ \(arm-v7a\)$/, "", line)
+				current = group(line)
+				if (current != "" && previous != "" && current != previous) print ""
+				print line " (arm64-v8a + arm-v7a)"
+				music_line = ""
+				previous = current
+				next
+			}
+			current = group(line)
 			if (current != "" && previous != "" && current != previous) print ""
-			print
+			print line
 			if (current != "") previous = current
 		}
 	' build.md >"$tmp"
@@ -792,7 +820,7 @@ build_rv() {
 			return 0
 		fi
 	fi
-	log "${table}: ${version}"
+	log "${table}"
 	if [ "${args[patcher_args]}" ]; then p_patcher_args+=("${args[patcher_args]}"); fi
 
 	local branding_patch
