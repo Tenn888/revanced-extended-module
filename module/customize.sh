@@ -172,6 +172,7 @@ if [ "$KSU" ]; then
 fi
 
 rm -rf "${MODPATH:?}/bin" "$MODPATH/stock/"
+ch_desc "✅ Enabled and working"
 cp -f "$MODPATH/module.prop" "$MODPATH/module.prop.orig"
 
 ui_print "* Done. No need to reboot."

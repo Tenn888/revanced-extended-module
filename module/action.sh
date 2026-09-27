@@ -12,6 +12,7 @@ if [ -z "$(get_mounts)" ]; then
 	if mount_rv_now; then
 		echo "* Enabled successfully"
 		cp -f "$MODDIR/module.prop.orig" "$MODDIR/module.prop"
+		ch_desc "✅ Enabled and working"
 	else
 		echo "* Failed to enable"
 	fi
@@ -22,5 +23,5 @@ else
 	umount_all
 	echo "* Disabled successfully"
 
-	ch_desc "⛔ Disabled by action"
+	ch_desc "❌ Disabled by action"
 fi
