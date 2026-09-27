@@ -2,7 +2,7 @@ name: CI
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 0 * * *"
+    - cron: "0 21 * * *"
 
 jobs:
   check:
@@ -19,21 +19,23 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Should build?
+      - name: Check RVX anddea patches
         id: should_build
         shell: bash
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           if ! git checkout origin/update build.md; then
-            echo "first time building!"
+            echo "No previous build log found; starting the first build."
             echo "SHOULD_BUILD=1" >> $GITHUB_OUTPUT
           else
             UPDATE_CFG=$(./build.sh config.toml --config-update)
             if [ "$UPDATE_CFG" ]; then
-              echo "'$UPDATE_CFG'"
+              echo "New anddea RVX patches detected:"
+              echo "$UPDATE_CFG"
               echo "SHOULD_BUILD=1" >> $GITHUB_OUTPUT
             else
+              echo "No new anddea RVX patches found."
               echo "SHOULD_BUILD=0" >> $GITHUB_OUTPUT
             fi
           fi
