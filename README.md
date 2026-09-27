@@ -2,64 +2,60 @@
     <a href="README.ru.md">🇷🇺 Русский</a>
 </p>
 
-# ReVanced Magisk Module
+# ReVanced Extended Module
 
-> ## Important: the build name has changed
->
-> **Since the build is now created with a new name, updating over an older version will not work.**
->
-> **Please remove the old version and install the new one.**
-
-Extensive ReVanced builder  
+ReVanced module and APK builder.
 
 Get the [latest CI release](https://github.com/Tenn888/revanced-extended-module/releases).
 
-Use [**zygisk-detach**](https://github.com/j-hc/zygisk-detach) to detach YouTube and YT Music from Play Store if you are using magisk modules. 
+Use [**zygisk-detach**](https://github.com/j-hc/zygisk-detach) to detach YouTube and YT Music from the Play Store if you use Magisk modules.
 
-<details><summary><big>Features</big></summary>
-<ul>
- <li> Supports all present and future ReVanced apps (including projects implementing the same interface like Morphe)</li>
- <li> Receives in-app updates</li>
- <li> Can build modules and non-root APKs</li>
- <li> Updated daily with the latest versions of apps and patches</li>
- <li> Optimizes APKs and modules for size</li>
- <li> Modules</li>
-    <ul>
-     <li> recompile invalidated odex for faster usage</li>
-     <li> receive updates from Magisk app</li>
-     <li> do not break safetynet or trigger root detections</li>
-     <li> handle installation of the correct version of the stock app and all that</li>
-     <li> support Magisk and KernelSU</li>
-    </ul>
-</ul>
+## Installation
+
+<details>
+<summary><big>Non-root APKs</big></summary>
+
+1. Install [MicroG RE](https://github.com/MorpheApp/MicroG-RE/releases). It is required to sign in to a Google account and use Google services.
+2. Download and install the matching APK from [Releases](https://github.com/Tenn888/revanced-extended-module/releases/).
+3. To update, install the newer APK over the existing version.
+
 </details>
 
-## To include/exclude patches or patch other apps
+<br>
 
- * Star the repo :eyes:
- * Use the repo as a [template](https://github.com/new?template_name=revanced-magisk-module&template_owner=j-hc)
- * Customize [`config.toml`](./config.toml) using [rvmm-config-gen](https://j-hc.github.io/rvmm-config-gen/)
- * Run the build [workflow](../../actions/workflows/build.yml)
- * Grab your modules and APKs from [releases](../../releases)
+<details>
+<summary><big>Root modules</big></summary>
 
-also see here [`CONFIG.md`](./CONFIG.md)
+1. Flash the module ZIP through Magisk or KernelSU and reboot the device.
+2. In KernelSU, open **Superuser**, select YouTube or YouTube Music, and disable **Unmount modules**. If the **Custom** section is available, change the setting there.
+3. To update, use the root manager's update function or flash the newer ZIP over the existing module.
+4. To prevent Google Play from replacing the stock app, install [zygisk-detach](https://github.com/j-hc/zygisk-detach/releases) and detach YouTube or YouTube Music.
 
-## If you are having trouble with the classic mount method of the modules
-such as,
-- **"Reflash needed"** error after reboots
-- **"Suspicious mount detected"** warnings from root detector apps
+</details>
 
-You can consider using [rvmm-zygisk-mount](https://github.com/j-hc/rvmm-zygisk-mount)
+
+## Troubleshooting the classic module mount method
+
+For example:
+- **"Reflash needed"** errors after rebooting
+- **"Suspicious mount detected"** warnings from root detection apps
+
+Consider using [rvmm-zygisk-mount](https://github.com/j-hc/rvmm-zygisk-mount).
 
 ## Building Locally
+
+### Requirements
+
+- Java 21, curl, git, jq, unzip and zip
+
 ### On Termux
 ```console
-bash <(curl -sSf https://raw.githubusercontent.com/j-hc/revanced-magisk-module/main/build-termux.sh)
+bash <(curl -sSf https://raw.githubusercontent.com/Tenn888/revanced-extended-module/main/build-termux.sh)
 ```
 
 ### On Linux
 ```console
-$ git clone https://github.com/j-hc/revanced-magisk-module --depth 1
-$ cd revanced-magisk-module
+$ git clone https://github.com/Tenn888/revanced-extended-module --depth 1
+$ cd revanced-extended-module
 $ ./build.sh
 ```
