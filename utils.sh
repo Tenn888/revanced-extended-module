@@ -24,7 +24,17 @@ toml_get_table_names() {
 	if [ "${__TOML_FILE__##*.}" == toml ]; then
 		sed -n 's/^\[\"\(.*\)\"\][[:space:]]*$/\1/p; s/^\[\([^].]*\)\][[:space:]]*$/\1/p' "$__TOML_FILE__"
 	else
-		jq -r -e 'to_entries[] | select(.value | type == "object") | .key' <<<"$__TOML__"
+		jq -r -e '
+			def app_group:
+				if startswith("YouTube-Extended-") then 0
+				elif startswith("YouTube-Music-Extended-") then 1
+				else 2 end;
+			def version_order:
+				try (capture("(?<version>[0-9]+(\\.[0-9]+)+)$").version | split(".") | map(-(tonumber))) catch [0];
+			[to_entries[] | select(.value | type == "object")]
+			| sort_by([(.key | app_group), (.key | version_order), .key])
+			| .[].key
+		' <<<"$__TOML__"
 	fi
 }
 toml_get_table_main() { jq -r -e 'to_entries | map(select(.value | type != "object")) | from_entries' <<<"$__TOML__"; }
