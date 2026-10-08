@@ -22,20 +22,28 @@ set_perm_recursive "$MODPATH/bin" 0 0 0755 0777
 
 umount_all
 
+IS_SYSTEM_APP=false
+UPDATED_SYSTEM_APP=false
 if ! OP=$(dumpsys package "$PKG_NAME") || [ -z "$OP" ]; then
 	if pmex install-existing "$PKG_NAME" >/dev/null 2>&1; then
 		pmex uninstall-system-updates "$PKG_NAME" >/dev/null 2>&1
+		IS_SYSTEM_APP=true
+	fi
+else
+	PKG_FLAGS=$(echo "$OP" | grep -m1 pkgFlags)
+	if echo "$PKG_FLAGS" | grep -Fq ' SYSTEM '; then
+		IS_SYSTEM_APP=true
+		if echo "$PKG_FLAGS" | grep -Fq ' UPDATED_SYSTEM_APP '; then
+			UPDATED_SYSTEM_APP=true
+			ui_print "* $PKG_NAME is an updated system app"
+		else
+			ui_print "* $PKG_NAME is a system app"
+		fi
 	fi
 fi
 
-IS_SYSTEM_APP=false
 INS=true
 if BASEPATH=$(get_basepath); then
-	if [ "${BASEPATH:1:4}" != "data" ]; then
-		IS_SYSTEM_APP=true
-		ui_print "* $PKG_NAME is a system app"
-	fi
-
 	VERSION=$(get_app_version)
 	if [ "$VERSION" ] && [ "$VERSION" = "$PKG_VER" ]; then
 		ui_print "* $PKG_NAME is up-to-date ($VERSION)"
@@ -81,7 +89,13 @@ install() {
 		if ! op=$(pmex install-commit "$SES"); then
 			ui_print "$op"
 			if echo "$op" | grep -q -e INSTALL_FAILED_VERSION_DOWNGRADE -e INSTALL_FAILED_UPDATE_INCOMPATIBLE -e INSTALL_FAILED_DUPLICATE; then
-				if [ "$IS_SYSTEM_APP" = true ]; then
+				if [ "$IS_SYSTEM_APP" = true ] && [ "$UPDATED_SYSTEM_APP" = false ]; then
+					if ! BASEPATH=$(get_basepath); then
+						install_err="ERROR: basepath failed."
+						break
+					fi
+					ui_print "* Debloating $BASEPATH"
+
 					mkdir -p /data/adb/rvhc/empty /data/adb/post-fs-data.d
 					chcon u:object_r:system_file:s0 /data/adb/rvhc/empty
 					P="/data/adb/post-fs-data.d/$PKG_NAME-uninstall.sh"
@@ -95,13 +109,23 @@ install() {
 					break
 				fi
 
-				ui_print "* Uninstalling..."
-				if ! op=$(pmex uninstall --user 0 "$PKG_NAME"); then
-					ui_print "$op"
-					if [ $IT = 2 ]; then
-						install_err="ERROR: pm uninstall failed."
-						break
+				if [ "$UPDATED_SYSTEM_APP" = true ]; then
+					ui_print "* Uninstalling updated system app..."
+					if ! op=$(pmex uninstall-system-updates "$PKG_NAME" 2>&1); then
+						ui_print "$op"
+					else
+						UPDATED_SYSTEM_APP=false
 					fi
+				else
+					ui_print "* Uninstalling user app..."
+					if ! op=$(pmex uninstall --user 0 "$PKG_NAME"); then
+						ui_print "$op"
+					fi
+				fi
+
+				if [ $IT = 2 ]; then
+					install_err="ERROR: uninstall failed."
+					break
 				fi
 				continue
 			fi
