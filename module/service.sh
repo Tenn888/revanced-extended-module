@@ -7,19 +7,23 @@ run() {
 	until [ "$(getprop sys.boot_completed)" = 1 ]; do sleep 1; done
 	until [ -d "/sdcard/Android" ]; do sleep 1; done
 
-	while
+	for i in $(seq 1 60); do
 		BASEPATH=$(get_basepath)
 		SVCL=$?
-		[ $SVCL = 20 ]
-	do sleep 2; done
+		if [ $SVCL = 0 ]; then
+			if mount_rv "$BASEPATH"; then
+				return 0
+			fi
+		fi
+		if [ $SVCL != 20 ] && [ $SVCL != 0 ]; then
+			ch_desc_err "App not installed: '$PKG_NAME'"
+			return 1
+		fi
+		sleep 2
+	done
 
-	if [ $SVCL != 0 ]; then
-		ch_desc_err "App not installed: '$BASEPATH'"
-		return
-	fi
-	sleep 4
-
-	mount_rv "$BASEPATH"
+	ch_desc_err "Mount retry timeout for '$PKG_NAME'"
+	return 1
 }
 
 if [ ! -f "$MODDIR/disabled_by_action" ]; then

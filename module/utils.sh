@@ -19,15 +19,20 @@ pmex() {
 }
 
 get_app_version() {
-	VERSION=$(dumpsys package "$PKG_NAME" 2>&1 | grep -m1 versionName=) VERSION="${VERSION#*=}"
+	VERSION=$(dumpsys package "$PKG_NAME" 2>&1 | awk -F= '/versionName=/{print $2; exit}')
 	echo "$VERSION"
 }
 
 get_basepath() {
-	BASEPATH=$(pmex path "$PKG_NAME")
+	BASEPATH=$(pmex path "$PKG_NAME" 2>/dev/null | awk -F: '/base/{print $2; exit}')
 	SVCL=$?
 
-	BASEPATH=${BASEPATH##*:} BASEPATH=${BASEPATH%/*}
+	if [ -z "$BASEPATH" ]; then
+		echo ""
+		return 20
+	fi
+
+	BASEPATH=${BASEPATH%/*}
 	echo "$BASEPATH"
 	return $SVCL
 }

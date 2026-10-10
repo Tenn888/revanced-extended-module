@@ -99,10 +99,8 @@ install() {
 					mkdir -p /data/adb/rvhc/empty /data/adb/post-fs-data.d
 					chcon u:object_r:system_file:s0 /data/adb/rvhc/empty
 					P="/data/adb/post-fs-data.d/$PKG_NAME-uninstall.sh"
-					echo "mount -o bind /data/adb/rvhc/empty ${BASEPATH}" >"$P"
-					chmod +x "$P"
-
-					ui_print "* Created the uninstall script."
+					echo "chcon u:object_r:system_file:s0 /data/adb/rvhc/empty 2>/dev/null || :" >"$P"
+					echo "mount -o bind /data/adb/rvhc/empty ${BASEPATH}" >>"$P"
 					ui_print ""
 					ui_print "* Reboot and reflash the module!"
 					install_err=" "
@@ -199,6 +197,6 @@ rm -rf "${MODPATH:?}/bin" "$MODPATH/stock/"
 ch_desc "✅ Enabled and working"
 cp -f "$MODPATH/module.prop" "$MODPATH/module.prop.orig"
 
-ui_print "* Done. No need to reboot."
-ui_print "  by j-hc (github.com/j-hc)"
+ui_print "* Done. Reboot your device to apply changes!"
+ui_print "  by j-hc, Tenn888"
 ui_print " "
