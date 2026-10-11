@@ -7,6 +7,19 @@ cli-version = "dev"
 
 
 
+["YouTube-Extended-21.39.525"]
+app-name = "YouTube"
+pkg-name = "com.google.android.youtube"
+rv-brand = "ReVanced Extended"
+module-prop-name = "youtube-extended-21.39.525"
+build-mode = "both"
+version = "21.39.525"
+patches-source = "anddea/revanced-patches"
+patches-version = "dev"
+apkmirror-dlurl = "https://www.apkmirror.com/apk/google-inc/youtube"
+uptodown-dlurl = "https://youtube.en.uptodown.com/android"
+archive-dlurl = "https://archive.org/download/revanced-extended-stock-apks/"
+
 ["YouTube-Extended-21.13.164"]
 app-name = "YouTube"
 pkg-name = "com.google.android.youtube"
@@ -73,6 +86,20 @@ uptodown-dlurl = "https://youtube.en.uptodown.com/android"
 archive-dlurl = "https://archive.org/download/revanced-extended-stock-apks/"
 
 
+["YouTube-Music-Extended-9.40.51"]
+app-name = "YouTube Music"
+pkg-name = "com.google.android.apps.youtube.music"
+rv-brand = "ReVanced Extended"
+module-prop-name = "youtube-music-extended-9.40.51"
+build-mode = "both"
+arch = "both"
+version = "9.40.51"
+patches-source = "anddea/revanced-patches"
+patches-version = "dev"
+apkmirror-dlurl = "https://www.apkmirror.com/apk/google-inc/youtube-music"
+uptodown-dlurl = "https://youtube-music.en.uptodown.com/android"
+archive-dlurl = "https://archive.org/download/revanced-extended-stock-apks/"
+
 ["YouTube-Music-Extended-9.15.51"]
 app-name = "YouTube Music"
 pkg-name = "com.google.android.apps.youtube.music"
@@ -87,6 +114,20 @@ apkmirror-dlurl = "https://www.apkmirror.com/apk/google-inc/youtube-music"
 uptodown-dlurl = "https://youtube-music.en.uptodown.com/android"
 archive-dlurl = "https://archive.org/download/revanced-extended-stock-apks/"
 
+["YouTube-Music-Extended-7.16.53"]
+app-name = "YouTube Music"
+pkg-name = "com.google.android.apps.youtube.music"
+rv-brand = "ReVanced Extended"
+module-prop-name = "youtube-music-extended-7-16-53"
+build-mode = "both"
+arch = "both"
+version = "7.16.53"
+patches-source = "anddea/revanced-patches"
+patches-version = "dev"
+apkmirror-dlurl = "https://www.apkmirror.com/apk/google-inc/youtube-music"
+uptodown-dlurl = "https://youtube-music.en.uptodown.com/android"
+archive-dlurl = "https://archive.org/download/revanced-extended-stock-apks/"
+
 ["YouTube-Music-Extended-8.30.54"]
 app-name = "YouTube Music"
 pkg-name = "com.google.android.apps.youtube.music"
@@ -95,6 +136,20 @@ module-prop-name = "youtube-music-extended-8-30-54"
 build-mode = "both"
 arch = "both"
 version = "8.30.54"
+patches-source = "anddea/revanced-patches"
+patches-version = "dev"
+apkmirror-dlurl = "https://www.apkmirror.com/apk/google-inc/youtube-music"
+uptodown-dlurl = "https://youtube-music.en.uptodown.com/android"
+archive-dlurl = "https://archive.org/download/revanced-extended-stock-apks/"
+
+["YouTube-Music-Extended-6.29.59"]
+app-name = "YouTube Music"
+pkg-name = "com.google.android.apps.youtube.music"
+rv-brand = "ReVanced Extended"
+module-prop-name = "youtube-music-extended-6-29-59"
+build-mode = "both"
+arch = "both"
+version = "6.29.59"
 patches-source = "anddea/revanced-patches"
 patches-version = "dev"
 apkmirror-dlurl = "https://www.apkmirror.com/apk/google-inc/youtube-music"
