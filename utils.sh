@@ -935,7 +935,9 @@ build_rv() {
 
 		module_config "$base_template" "$pkg_name" "$version" "$arch"
 
-		local patches_ver="${patches_jar##*-}"
+		local patches_ver="${patches_jar##*/}"
+		patches_ver="${patches_ver%.mpp}"
+		patches_ver="${patches_ver#patches-}"
 		module_prop \
 			"${args[module_prop_name]}" \
 			"${app_name} ${args[rv_brand]}" \
