@@ -1,6 +1,6 @@
 {
-  "version": "v21.39.525 (patches 4.4.0-dev.1)",
-  "versionCode": 39,
-  "zipUrl": "https://github.com/Tenn888/revanced-extended-module/releases/download/39/youtube-revanced-extended-module-v21.39.525-all.zip",
+  "version": "v21.39.525 (patches 4.4.0-dev.2)",
+  "versionCode": 40,
+  "zipUrl": "https://github.com/Tenn888/revanced-extended-module/releases/download/40/youtube-revanced-extended-module-v21.39.525-all.zip",
   "changelog": "https://raw.githubusercontent.com/Tenn888/revanced-extended-module/update/build.md"
 }
