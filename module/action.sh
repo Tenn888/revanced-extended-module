@@ -7,17 +7,17 @@ echo ""
 
 DFILE="$MODDIR/disabled_by_action"
 
-if [ -z "$(get_mounts)" ]; then
+MS=$(get_mounts)
+if [ -z "$MS" ]; then
 	rm -f "$DFILE"
 	if mount_rv_now; then
 		echo "* Enabled successfully"
-		cp -f "$MODDIR/module.prop.orig" "$MODDIR/module.prop"
 		ch_desc "✅ Enabled and working"
 	else
 		echo "* Failed to enable"
 	fi
 	echo ""
-	get_mounts
+	echo "$MS"
 else
 	touch "$DFILE"
 	umount_all
