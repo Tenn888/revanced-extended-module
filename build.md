@@ -17,7 +17,7 @@ Install [zygisk-detach](https://github.com/j-hc/zygisk-detach/releases) to detac
 [revanced-magisk-module](https://github.com/j-hc/revanced-magisk-module)  
 [revanced-extended-module](https://github.com/Tenn888/revanced-extended-module)
   
-Patches: anddea/revanced-patches/patches-4.4.0-dev.4.mpp
-[Changelog](https://github.com/anddea/revanced-patches/releases/tag/v4.4.0-dev.4)
-CLI: MorpheApp/morphe-cli/morphe-desktop-1.20.0-all.jar
-[Changelog](https://github.com/MorpheApp/morphe-desktop/releases/tag/v1.20.0)  
+Patches: anddea/revanced-patches/patches-4.4.0-dev.5.mpp
+[Changelog](https://github.com/anddea/revanced-patches/releases/tag/v4.4.0-dev.5)
+CLI: MorpheApp/morphe-cli/morphe-desktop-2.0.0-dev.6-all.jar
+[Changelog](https://github.com/MorpheApp/morphe-desktop/releases/tag/v2.0.0-dev.6)  
