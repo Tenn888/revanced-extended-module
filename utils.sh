@@ -169,15 +169,6 @@ get_prebuilts() {
 		tag_name=${tag_name#v}
 
 		if [ "$tag" = "Patches" ]; then
-			changelog_log_once "${cl_dir}/changelog.md" "Patches: ${src}/${name}"
-			changelog_log_once "${cl_dir}/changelog.md" "[Changelog](https://github.com/${src}/releases/tag/v${tag_name})"
-		else
-			local changelog_src=${src/MorpheApp\/morphe-cli/MorpheApp\/morphe-desktop}
-			changelog_log_once "${cl_dir}/changelog.md" "CLI: ${src}/${name}"
-			changelog_log_once "${cl_dir}/changelog.md" "[Changelog](https://github.com/${changelog_src}/releases/tag/v${tag_name})"
-		fi
-
-		if [ "$tag" = "Patches" ]; then
 			if [ "$REMOVE_RV_INTEGRATIONS_CHECKS" = "true" ]; then
 				local extensions_ext
 				extensions_ext=$(unzip -l "${file}" "extensions/shared.*" | grep -o "shared\..*") extensions_ext="${extensions_ext#*.}"
@@ -292,6 +283,27 @@ gh_dl() {
 }
 
 log() { echo -e "$1  " >>"build.md"; }
+previous_patches_ver() {
+	local table=$1 line version
+	[ -f "${TEMP_DIR}/previous-build.md" ] || return 1
+	table=${table% (arm64-v8a)}
+	table=${table% (arm-v7a)}
+	while IFS= read -r line; do
+		case "$line" in
+			"$table, "*)
+				version=${line#"$table, "}
+				version=${version%"${version##*[![:space:]]}"}
+				[ -n "$version" ] && { printf '%s\n' "$version"; return 0; }
+				;;
+		esac
+	done <"${TEMP_DIR}/previous-build.md"
+	return 1
+}
+log_failed_build() {
+	local table=$1 patches_ver
+	if ! patches_ver=$(previous_patches_ver "$table"); then patches_ver=unknown; fi
+	log "${table}, ${patches_ver}"
+}
 format_build_log() {
 	local tmp
 	tmp=$(mktemp -p "$TEMP_DIR")
@@ -301,28 +313,37 @@ format_build_log() {
 			if (line ~ /^YouTube-Extended/) return "youtube"
 			return ""
 		}
-		{
-			line = $0
-			sub(/[[:space:]]+$/, "", line)
-			if (line ~ /^YouTube-(Music-)?Extended.*: [0-9]/) sub(/: [0-9][0-9.]*$/, "", line)
-			if (line ~ /^YouTube-Music-Extended.* \(arm64-v8a\)$/) {
-				music_line = line
-				next
-			}
-			if (music_line != "" && line ~ /^YouTube-Music-Extended.* \(arm-v7a\)$/) {
-				sub(/ \(arm-v7a\)$/, "", line)
-				current = group(line)
-				if (current != "" && previous != "" && current != previous) print ""
-				print line " (arm64-v8a + arm-v7a)"
-				music_line = ""
-				previous = current
-				next
-			}
+		function emit(line, current) {
 			current = group(line)
 			if (current != "" && previous != "" && current != previous) print ""
 			print line
 			if (current != "") previous = current
 		}
+		{
+			line = $0
+			sub(/[[:space:]]+$/, "", line)
+			if (line ~ /^YouTube-(Music-)?Extended.*: [0-9]/) sub(/: [0-9][0-9.]*$/, "", line)
+			if (music_line != "") {
+				music_key = music_line
+				sub(/ \(arm64-v8a\)/, "", music_key)
+				line_key = line
+				sub(/ \(arm-v7a\)/, "", line_key)
+				if (line ~ /^YouTube-Music-Extended.* \(arm-v7a\), / && music_key == line_key) {
+					sub(/ \(arm64-v8a\), /, ", ", music_line)
+					emit(music_line)
+					music_line = ""
+					next
+				}
+				emit(music_line)
+				music_line = ""
+			}
+			if (line ~ /^YouTube-Music-Extended.* \(arm64-v8a\), /) {
+				music_line = line
+				next
+			}
+			emit(line)
+		}
+		END { if (music_line != "") emit(music_line) }
 	' build.md >"$tmp"
 	mv -f "$tmp" build.md
 }
@@ -709,7 +730,7 @@ check_sig() {
 	fi
 }
 
-build_rv() {
+build_rv_impl() {
 	eval "declare -A args=${1#*=}"
 	local version="" pkg_name=""
 	local mode_arg=${args[build_mode]} version_mode=${args[version]}
@@ -830,7 +851,9 @@ build_rv() {
 			return 0
 		fi
 	fi
-	log "${table}"
+	local patches_ver="${args[ptjar]##*/}"
+	patches_ver="${patches_ver%.mpp}"
+	patches_ver="${patches_ver#patches-}"
 	if [ "${args[patcher_args]}" ]; then p_patcher_args+=("${args[patcher_args]}"); fi
 
 	local branding_patch
@@ -936,9 +959,6 @@ build_rv() {
 
 		module_config "$base_template" "$pkg_name" "$version" "$arch"
 
-		local patches_ver="${patches_jar##*/}"
-		patches_ver="${patches_ver%.mpp}"
-		patches_ver="${patches_ver#patches-}"
 		module_prop \
 			"${args[module_prop_name]}" \
 			"${app_name} ${args[rv_brand]}" \
@@ -979,6 +999,22 @@ build_rv() {
 		popd >/dev/null || :
 		pr "Built ${table} (root): '${BUILD_DIR}/${module_output}'"
 	done
+	BUILD_RV_PATCH_SUCCESS=true
+}
+
+build_rv() {
+	eval "declare -A args=${1#*=}"
+	local table=${args[table]} patches_ver
+	BUILD_RV_PATCH_SUCCESS=false
+	build_rv_impl "$1"
+	if [ "$BUILD_RV_PATCH_SUCCESS" = true ]; then
+		patches_ver="${args[ptjar]##*/}"
+		patches_ver="${patches_ver%.mpp}"
+		patches_ver="${patches_ver#patches-}"
+		log "${table}, ${patches_ver}"
+	else
+		log_failed_build "$table"
+	fi
 }
 
 list_args() { tr -d '\t\r' <<<"$1" | tr -s ' ' | sed 's/" "/"\n"/g' | sed 's/\([^"]\)"\([^"]\)/\1'\''\2/g' | grep -v '^$' || :; }

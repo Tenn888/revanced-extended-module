@@ -41,6 +41,11 @@ if [ "${2-}" = "--config-update" ]; then
 	exit 0
 fi
 
+if [ -f build.md ]; then
+	cp -f build.md "$TEMP_DIR/previous-build.md"
+else
+	rm -f "$TEMP_DIR/previous-build.md"
+fi
 : >build.md
 ENABLE_MODULE_UPDATE=$(toml_get "$main_config_t" enable-module-update) || ENABLE_MODULE_UPDATE=true
 if [ "$ENABLE_MODULE_UPDATE" = true ] && [ -z "${GITHUB_REPOSITORY-}" ]; then
@@ -50,9 +55,6 @@ fi
 if ((COMPRESSION_LEVEL > 9)) || ((COMPRESSION_LEVEL < 0)); then abort "compression-level must be within 0-9"; fi
 
 rm -rf module/bin/*/tmp.*
-for file in "$TEMP_DIR"/*/changelog.md; do
-	[ -f "$file" ] && : >"$file"
-done
 
 mkdir -p ${MODULE_TEMPLATE_DIR}/bin/arm64 ${MODULE_TEMPLATE_DIR}/bin/arm ${MODULE_TEMPLATE_DIR}/bin/x86 ${MODULE_TEMPLATE_DIR}/bin/x64
 gh_dl "${MODULE_TEMPLATE_DIR}/bin/arm64/cmpr" "https://github.com/j-hc/cmpr/releases/latest/download/cmpr-arm64-v8a"
@@ -80,6 +82,7 @@ for table_name in $(toml_get_table_names); do
 
 	if ! PREBUILTS="$(get_prebuilts "$cli_src" "$cli_ver" "$patches_src" "$patches_ver")"; then
 		epr "Could not get prebuilts"
+		log_failed_build "$table_name"
 		continue
 	fi
 	read -r patches_jar cli_jar <<<"$PREBUILTS"
@@ -163,9 +166,9 @@ if [ -z "$(ls -A1 "${BUILD_DIR}")" ]; then abort "All builds failed."; fi
 
 log "\nInstall [Microg](https://github.com/MorpheApp/MicroG-RE/releases) for Non-Root YouTube and YT Music APKs"
 log "Install [zygisk-detach](https://github.com/j-hc/zygisk-detach/releases) to detach YouTube and YT Music modules from Play Store"
-log "\n[revanced-magisk-module](https://github.com/j-hc/revanced-magisk-module)"
-log "[revanced-extended-module](https://github.com/Tenn888/revanced-extended-module)\n"
-log "$(cat "$TEMP_DIR"/*/changelog.md)"
+log "\nPatches: [RVX] (https://github.com/anddea/revanced-patches)"
+log "CLI: [Morphe] (https://github.com/MorpheApp/morphe-desktop)"
+log "\n[revanced-extended-module](https://github.com/Tenn888/revanced-extended-module)\n"
 
 SKIPPED=$(cat "$TEMP_DIR"/skipped 2>/dev/null || :)
 if [ -n "$SKIPPED" ]; then
