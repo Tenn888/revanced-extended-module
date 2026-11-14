@@ -14,8 +14,8 @@ YouTube-Music-Extended-6.29.59, 4.4.0-dev.7
 Install [Microg](https://github.com/MorpheApp/MicroG-RE/releases) for Non-Root YouTube and YT Music APKs  
 Install [zygisk-detach](https://github.com/j-hc/zygisk-detach/releases) to detach YouTube and YT Music modules from Play Store  
 
-Patches: [RVX] (https://github.com/anddea/revanced-patches)  
-CLI: [Morphe] (https://github.com/MorpheApp/morphe-desktop)  
+Patches: [RVX](https://github.com/anddea/revanced-patches)  
+CLI: [Morphe](https://github.com/MorpheApp/morphe-desktop)  
 
 [revanced-extended-module](https://github.com/Tenn888/revanced-extended-module)
   
