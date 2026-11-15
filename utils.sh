@@ -168,6 +168,8 @@ get_prebuilts() {
 		fi
 		tag_name=${tag_name#v}
 
+		printf '%s %s ' "$file" "$tag_name"
+
 		if [ "$tag" = "Patches" ]; then
 			if [ "$REMOVE_RV_INTEGRATIONS_CHECKS" = "true" ]; then
 				local extensions_ext
@@ -184,7 +186,6 @@ get_prebuilts() {
 				rm -r "${file}-zip" || :
 			fi
 		fi
-		echo -n "$file "
 	done
 	echo
 }
@@ -200,7 +201,9 @@ set_prebuilts() {
 }
 
 config_update() {
-	if [ ! -f build.md ]; then abort "build.md not available"; fi
+	if [ -f build-meta.json ] && ! jq -e '(.patches | type == "object") and (.cli | type == "object")' build-meta.json >/dev/null; then
+		abort "config_update error: invalid build-meta.json"
+	fi
 	declare -A sources
 	: >"$TEMP_DIR"/skipped
 	local upped=()
@@ -216,6 +219,11 @@ config_update() {
 			if [ "${sources["$PATCHES_SRC/$PATCHES_VER"]}" = 1 ]; then upped+=("$table_name"); fi
 		else
 			sources["$PATCHES_SRC/$PATCHES_VER"]=0
+			local metadata_key="${PATCHES_SRC}@${PATCHES_VER}"
+			local previous_version=""
+			if [ -f build-meta.json ]; then
+				previous_version=$(jq -r --arg key "$metadata_key" '.patches[$key].version // empty' build-meta.json)
+			fi
 			local rv_rel="https://api.github.com/repos/${PATCHES_SRC}/releases"
 			if [ "$PATCHES_VER" = "dev" ]; then
 				last_patches=$(gh_req "$rv_rel" - | jq -e -r '.[0]') || continue
@@ -225,19 +233,15 @@ config_update() {
 				last_patches=$(gh_req "$rv_rel/tags/${PATCHES_VER}" -) || continue
 			fi
 			tag_name=$(jq -e -r '.tag_name' <<<"$last_patches") || abort "config_update error: No tag name"
-			if ! last_patches=$(jq -e -r '.assets[] | select(.name | (endswith("asc") or endswith("json")) | not) | .name' <<<"$last_patches"); then
-				abort "config_update error: '$last_patches'"
+			if ! last_patches=$(jq -e -r '[.assets[] | select(.name | (endswith("asc") or endswith("json")) | not) | .name] | .[]' <<<"$last_patches"); then
+				abort "config_update error: no patch assets found"
 			fi
 			if [ "$last_patches" ]; then
-				local name_ext="${last_patches##*.}"
-				last_patches="patches-${tag_name#v}.${name_ext}"
-
-				if ! OP=$(grep -m1 "^Patches: ${PATCHES_SRC}/${last_patches}" build.md); then
+				tag_name=${tag_name#v}
+				if [ "$previous_version" != "$tag_name" ]; then
 					sources["$PATCHES_SRC/$PATCHES_VER"]=1
 					prcfg=true
 					upped+=("$table_name")
-				else
-					echo "$OP" >>"$TEMP_DIR"/skipped
 				fi
 			fi
 		fi
@@ -284,24 +288,12 @@ gh_dl() {
 
 log() { echo -e "$1  " >>"build.md"; }
 previous_patches_ver() {
-	local table=$1 line version
-	[ -f "${TEMP_DIR}/previous-build.md" ] || return 1
-	table=${table% (arm64-v8a)}
-	table=${table% (arm-v7a)}
-	while IFS= read -r line; do
-		case "$line" in
-			"$table, "*)
-				version=${line#"$table, "}
-				version=${version%"${version##*[![:space:]]}"}
-				[ -n "$version" ] && { printf '%s\n' "$version"; return 0; }
-				;;
-		esac
-	done <"${TEMP_DIR}/previous-build.md"
-	return 1
+	[ -f build-meta.json ] || return 1
+	jq -e -r --arg key "$1@$2" '.patches[$key].version // empty' build-meta.json
 }
 log_failed_build() {
-	local table=$1 patches_ver
-	if ! patches_ver=$(previous_patches_ver "$table"); then patches_ver=unknown; fi
+	local table=$1 patches_src=$2 configured_patches_ver=$3 patches_ver
+	if ! patches_ver=$(previous_patches_ver "$patches_src" "$configured_patches_ver"); then patches_ver=unknown; fi
 	log "${table}, ${patches_ver}"
 }
 format_build_log() {
@@ -1013,7 +1005,7 @@ build_rv() {
 		patches_ver="${patches_ver#patches-}"
 		log "${table}, ${patches_ver}"
 	else
-		log_failed_build "$table"
+		log_failed_build "$table" "${args[patches_src]}" "${args[patches_ver]}"
 	fi
 }
 

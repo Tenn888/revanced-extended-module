@@ -27,8 +27,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          if ! git checkout origin/update build.md; then
-            echo "No previous build log found; starting the first build."
+          if ! git checkout origin/update build-meta.json; then
+            echo "No previous build metadata found; starting the first build."
             echo "SHOULD_BUILD=1" >> $GITHUB_OUTPUT
           else
             UPDATE_CFG=$(./build.sh config.toml --config-update)

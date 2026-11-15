@@ -41,11 +41,6 @@ if [ "${2-}" = "--config-update" ]; then
 	exit 0
 fi
 
-if [ -f build.md ]; then
-	cp -f build.md "$TEMP_DIR/previous-build.md"
-else
-	rm -f "$TEMP_DIR/previous-build.md"
-fi
 : >build.md
 ENABLE_MODULE_UPDATE=$(toml_get "$main_config_t" enable-module-update) || ENABLE_MODULE_UPDATE=true
 if [ "$ENABLE_MODULE_UPDATE" = true ] && [ -z "${GITHUB_REPOSITORY-}" ]; then
@@ -63,6 +58,7 @@ gh_dl "${MODULE_TEMPLATE_DIR}/bin/x86/cmpr" "https://github.com/j-hc/cmpr/releas
 gh_dl "${MODULE_TEMPLATE_DIR}/bin/x64/cmpr" "https://github.com/j-hc/cmpr/releases/latest/download/cmpr-x86_64"
 
 idx=0
+BUILD_METADATA='{"patches":{},"cli":{}}'
 for table_name in $(toml_get_table_names); do
 	if [ -z "$table_name" ]; then continue; fi
 	t=$(toml_get_table "$table_name")
@@ -82,12 +78,28 @@ for table_name in $(toml_get_table_names); do
 
 	if ! PREBUILTS="$(get_prebuilts "$cli_src" "$cli_ver" "$patches_src" "$patches_ver")"; then
 		epr "Could not get prebuilts"
-		log_failed_build "$table_name"
+		log_failed_build "$table_name" "$patches_src" "$patches_ver"
 		continue
 	fi
-	read -r patches_jar cli_jar <<<"$PREBUILTS"
+	read -r patches_jar patches_tag cli_jar cli_tag <<<"$PREBUILTS"
+	patches_key="${patches_src}@${patches_ver}"
+	cli_key="${cli_src}@${cli_ver}"
+	BUILD_METADATA=$(jq \
+		--arg patches_key "$patches_key" \
+		--arg patches_tag "$patches_tag" \
+		--arg patches_asset "$(basename "$patches_jar")" \
+		--arg patches_releases "https://github.com/${patches_src}/releases" \
+		--arg cli_key "$cli_key" \
+		--arg cli_tag "$cli_tag" \
+		--arg cli_asset "$(basename "$cli_jar")" \
+		--arg cli_releases "https://github.com/${cli_src}/releases" \
+		'.patches[$patches_key] = {version: $patches_tag, asset: $patches_asset, releases: $patches_releases}
+		| .cli[$cli_key] = {version: $cli_tag, asset: $cli_asset, releases: $cli_releases}' \
+		<<<"$BUILD_METADATA")
 	app_args[cli]=$cli_jar
 	app_args[ptjar]=$patches_jar
+	app_args[patches_src]=$patches_src
+	app_args[patches_ver]=$patches_ver
 	app_args[rv_brand]=$(toml_get "$t" rv-brand) || app_args[rv_brand]=$DEF_RV_BRAND
 	app_args[enable_update_checks]=$(toml_get "$t" enable-update-checks) && vtf "${app_args[enable_update_checks]}" "enable-update-checks" || app_args[enable_update_checks]="false"
 
@@ -163,11 +175,12 @@ wait
 format_build_log
 _clean_tmp
 if [ -z "$(ls -A1 "${BUILD_DIR}")" ]; then abort "All builds failed."; fi
+printf '%s\n' "$BUILD_METADATA" >build-meta.json
 
 log "\nInstall [Microg](https://github.com/MorpheApp/MicroG-RE/releases) for Non-Root YouTube and YT Music APKs"
 log "Install [zygisk-detach](https://github.com/j-hc/zygisk-detach/releases) to detach YouTube and YT Music modules from Play Store"
-log "\nPatches: [RVX](https://github.com/anddea/revanced-patches)"
-log "CLI: [Morphe](https://github.com/MorpheApp/morphe-desktop)"
+log "\nPatches: [RVX] (https://github.com/anddea/revanced-patches)"
+log "CLI: [Morphe] (https://github.com/MorpheApp/morphe-desktop)"
 log "\n[revanced-extended-module](https://github.com/Tenn888/revanced-extended-module)\n"
 
 SKIPPED=$(cat "$TEMP_DIR"/skipped 2>/dev/null || :)
