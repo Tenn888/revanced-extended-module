@@ -179,8 +179,8 @@ printf '%s\n' "$BUILD_METADATA" >build-meta.json
 
 log "\nInstall [Microg](https://github.com/MorpheApp/MicroG-RE/releases) for Non-Root YouTube and YT Music APKs"
 log "Install [zygisk-detach](https://github.com/j-hc/zygisk-detach/releases) to detach YouTube and YT Music modules from Play Store"
-log "\nPatches: [RVX] (https://github.com/anddea/revanced-patches)"
-log "CLI: [Morphe] (https://github.com/MorpheApp/morphe-desktop)"
+log "\nPatches: [RVX](https://github.com/anddea/revanced-patches)"
+log "CLI: [Morphe](https://github.com/MorpheApp/morphe-desktop)"
 log "\n[revanced-extended-module](https://github.com/Tenn888/revanced-extended-module)\n"
 
 SKIPPED=$(cat "$TEMP_DIR"/skipped 2>/dev/null || :)
