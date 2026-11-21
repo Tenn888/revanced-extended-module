@@ -1,15 +1,15 @@
 {
   "patches": {
     "anddea/revanced-patches@dev": {
-      "version": "4.4.0-dev.7",
-      "asset": "patches-4.4.0-dev.7.mpp",
+      "version": "4.4.0-dev.8",
+      "asset": "patches-4.4.0-dev.8.mpp",
       "releases": "https://github.com/anddea/revanced-patches/releases"
     }
   },
   "cli": {
     "MorpheApp/morphe-cli@dev": {
-      "version": "2.3.0-dev.1",
-      "asset": "morphe-desktop-2.3.0-dev.1-all.jar",
+      "version": "2.3.0-dev.3",
+      "asset": "morphe-desktop-2.3.0-dev.3-all.jar",
       "releases": "https://github.com/MorpheApp/morphe-cli/releases"
     }
   }
